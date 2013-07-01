@@ -138,4 +138,4 @@ def find_slug(datafilename,locationfilename,resultfilename):
             
 
 
-find_slug('data.txt','location.txt','result.txt')
+#find_slug('data.txt','location.txt','result.txt')

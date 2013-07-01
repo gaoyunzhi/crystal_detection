@@ -20,7 +20,7 @@ def test_range(x):
     return False
 
 def video_analysis(filename,datafilename):
-    global h,w
+    global h,w,vidcap
     vidcap=cv2.VideoCapture(filename)
     success,image=vidcap.read()
     h,w=image.shape[0],image.shape[1]
@@ -44,4 +44,4 @@ def video_analysis(filename,datafilename):
         f.close()
     
                 
-video_analysis('C:\\TDDOWNLOAD\\062613-1.mp4','tmp.txt')
+#video_analysis('C:\\TDDOWNLOAD\\062613-1.mp4','tmp.txt')
