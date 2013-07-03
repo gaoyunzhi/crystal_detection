@@ -107,6 +107,8 @@ def find_slug(msec):
         ret= leftmargin,leftinner,rightinner,rightmargin
     return ret
     
+def scale(x):
+    return x*100.0/N
 def float_to_str(x):
     return "%.2f" %x
 
@@ -159,27 +161,27 @@ def v2img(videofilename, outputdir):
         inner_length=r2[2]-r2[1]+1
         desire_left_end=(N-1-length)*0.5
         m=(m1*(r2[0]-desire_left_end)+m2*(desire_left_end-r1[0]))/(r2[0]-r1[0])
-        if len(find_slug(m))!=4: continue
+        fs=find_slug(m)
+        if len(fs)!=4: continue
+        slug_number+=1
         vidcap.set(cv.CV_CAP_PROP_POS_MSEC, m) 
         success,image=vidcap.read()
-        cv2.imwrite(os.path.join(outputdir,'slug%d.jpg'%int(m/100)), image)
+        cv2.imwrite(os.path.join(outputdir,'slug%d.jpg'%slug_number), image)
         SPEED=N*0.67*sp/(r1[0]-r2[0])
-        if SPEED>1000 or SPEED<100: print 'speed=',SPEED
         desire_left_end=-length*1.2+MARGIN_WIDTH_H
-        msec=(m1*(r2[0]-desire_left_end)+m2*(desire_left_end-r1[0]))/(r2[0]-r1[0])
-        slug_number+=1
+        msec=(m1*(r2[0]-desire_left_end)+m2*(desire_left_end-r1[0]))/(r2[0]-r1[0])        
         length=length*100.0/N
         inner_length=inner_length*100.0/N
-        slugs.append((m,length,inner_length))
-        print '\t'.join(map(float_to_str,(m,length,inner_length))),SPEED,msec,msec+SPEED # for test
+        fs=map(scale,fs)
+        slugs.append([slug_number,m,length,inner_length,(r1[0]-r2[0])/(m2-m1)*100000.0/N,horizontal_center]+fs)
     with open(resultfilename,'w') as f:
         for line in slugs:
             f.write('\t'.join(map(float_to_str,line))+'\n')    
         m=len(slugs)
-        avglen=sum([y for (x,y,z) in slugs])/m
-        avgcenterlen= sum([z for (x,y,z) in slugs])/m
+        avglen=sum([x[2] for x in slugs])/m
+        avgcenterlen= sum([x[3] for x in slugs])/m
         f.write('avg length '+float_to_str(avglen)+'\n')
         f.write('avg center length '+float_to_str(avgcenterlen)+'\n')
 
 
-v2img('C:\\Dropbox\\video analysis\\062613-1.mp4','C:\\Dropbox\\video analysis\\slugs')
+#v2img('C:\\Dropbox\\video analysis\\062613\\062613-1.mp4','C:\\Dropbox\\video analysis\\slugs')
